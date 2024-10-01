@@ -1,5 +1,3 @@
-
-
 #jogo Espacial
 #Um grupo de fogueteiros escapa de uma fortaleza estelar a bordo de sua nave danificada.
 #Desvie dos obstaculos até chegar em segurança na LASC.
@@ -49,6 +47,8 @@ class Player:
     image = None
     x = None
     y = None
+    width = None
+    height = None
 
     def __init__(self, x, y):
         player_fig = pygame.image.load("Images/player.png")
@@ -57,6 +57,8 @@ class Player:
         self.image = player_fig
         self.x = x
         self.y = y
+        self.width = player_fig.get_width()
+        self.height = player_fig.get_height()
 
 
     def draw (self, screen, x, y) :
@@ -72,6 +74,8 @@ class Hazard:
     image = None
     x = None
     y = None
+    width = None
+    height = None
 
     def __init__(self, image, x, y):
         hazard_fig = pygame.image.load(image)
@@ -80,6 +84,8 @@ class Hazard:
         self.image = hazard_fig
         self.x = x
         self.y = y
+        self.width = hazard_fig.get_width()
+        self.height = hazard_fig.get_height()
 
     def draw (self, screen, x, y):
         screen.blit(self.image, (x, y))
@@ -210,6 +216,15 @@ class Game:
         screen.blit(explosion_fig, (x, y))
     #draw_explosion()
 
+    def check_collision(self, player, hazard):
+        # AABB Collision Detection
+        if (player.x < hazard.x + hazard.width and
+                player.x + player.width > hazard.x and
+                player.y < hazard.y + hazard.height and
+                player.y + player.height > hazard.y):
+            return True
+        return False
+
 
     def loop(self):   #laço principal
 
@@ -303,13 +318,7 @@ class Game:
             if score % 60 == 0:
                 velocidade_hazard += 0.03
 
-            #colisão e game over:
-            player_rect = self.player.image.get_rect()
-            player_rect.topleft = (self.player.x, self.player.y)
-            hazard_rect = self.hazard[hzrd].image.get_rect()
-            hazard_rect.topleft = (self.hazard[hzrd].x, self.hazard[hzrd].y)
-
-            if hazard_rect.colliderect(player_rect):
+            if self.check_collision(self.player, self.hazard[hzrd]):
                 # som da colisão
                 self.soundtrack.play_sound('Sounds/crash.wav')
 
@@ -318,7 +327,7 @@ class Game:
                                     self.player.y - (self.player.image.get_height() / 2))
 
                 # mensagem game over
-                self.write_message("FOI DE BERÇO!", 255, 0, 0, 80, 200)    #vermelha
+                self.write_message("FOI DE BERÇO!", 255, 0, 0, 80, 200)  # vermelha
                 pygame.display.update()
                 time.sleep(3)
                 self.run = False
