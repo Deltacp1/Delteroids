@@ -1,4 +1,4 @@
-import sys
+
 
 #jogo Espacial
 #Um grupo de fogueteiros escapa de uma fortaleza estelar a bordo de sua nave danificada.
